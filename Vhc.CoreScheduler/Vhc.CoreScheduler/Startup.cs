@@ -15,6 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Vhc.CoreScheduler.Common.Services;
 using System.Threading;
+using Vhc.CoreScheduler.Services;
 
 namespace Vhc.CoreScheduler
 {
@@ -44,6 +45,7 @@ namespace Vhc.CoreScheduler
 
             services.AddSingleton<SchedulerService>();
             services.AddTransient<UnitService>();
+            services.AddSingleton<IDatabaseService, DatabaseService>();
             
             services.AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -78,7 +80,12 @@ namespace Vhc.CoreScheduler
                 {
                     Id = 1,
                     Name = "A",
-                    CronExpression = "* * * * * ?",
+                    CronExpression = "*/15 * * * * ?",
+                    Environment = new Common.Models.ExecutionEnvironment
+                    {
+                        Name = "ENV",
+                        ConnectionString = "Data Source=env.db"
+                    },
                     JobDefinition = new Common.Models.JobDefinition
                     {
                         Id = 2,

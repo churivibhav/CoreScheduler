@@ -63,6 +63,7 @@ namespace Vhc.CoreScheduler.Common.Services
                 .WithIdentity(triggerDefinition.Name, group)
                 .WithCronSchedule(triggerDefinition.CronExpression)
                 .UsingJobData("TriggerName", triggerDefinition.Name)
+                .UsingJobData("ConnectionString", triggerDefinition.Environment.ConnectionString)
                 .ForJob(job)
                 .Build();
                 

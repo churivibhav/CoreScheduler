@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Vhc.CoreScheduler.Data;
 
 namespace Vhc.CoreScheduler.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20181019105824_AddingExecutionEnvironmentAndGroups")]
+    partial class AddingExecutionEnvironmentAndGroups
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -191,24 +193,6 @@ namespace Vhc.CoreScheduler.Data.Migrations
                     b.ToTable("ExecutionEnvironments");
                 });
 
-            modelBuilder.Entity("Vhc.CoreScheduler.Common.Models.ExecutionVariable", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int?>("EnvironmentId");
-
-                    b.Property<string>("Name");
-
-                    b.Property<string>("Value");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EnvironmentId");
-
-                    b.ToTable("Variables");
-                });
-
             modelBuilder.Entity("Vhc.CoreScheduler.Common.Models.JobGroup", b =>
                 {
                     b.Property<int>("Id")
@@ -264,13 +248,6 @@ namespace Vhc.CoreScheduler.Data.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Vhc.CoreScheduler.Common.Models.ExecutionVariable", b =>
-                {
-                    b.HasOne("Vhc.CoreScheduler.Common.Models.ExecutionEnvironment", "Environment")
-                        .WithMany()
-                        .HasForeignKey("EnvironmentId");
                 });
 #pragma warning restore 612, 618
         }

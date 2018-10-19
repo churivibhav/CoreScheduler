@@ -1,5 +1,6 @@
 ﻿using Quartz;
 using Quartz.Impl;
+using Quartz.Impl.Matchers;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -7,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Vhc.CoreScheduler.Common.Jobs;
+using Vhc.CoreScheduler.Common.Listeners;
 using Vhc.CoreScheduler.Common.Models;
 
 namespace Vhc.CoreScheduler.Common.Services
@@ -32,6 +34,9 @@ namespace Vhc.CoreScheduler.Common.Services
             scheduler = await factory.GetScheduler();
             await scheduler.Start(token);
 
+            //IJobListener jobListener = new SignalJobListener();
+            //scheduler.ListenerManager.AddJobListener(jobListener, GroupMatcher<JobKey>.AnyGroup());
+
             while (!token.IsCancellationRequested)
             {
                 await Task.Delay(TimeSpan.FromMinutes(1), token);
@@ -51,11 +56,13 @@ namespace Vhc.CoreScheduler.Common.Services
             IJobDetail job = JobBuilder.Create<OrchestrationJob>()
                 .WithIdentity(jobDefinition.Name, group)
                 .UsingJobData(OrchestrationJob.UnitCollectionIdPropertyName, jobDefinition.UnitCollectionId)
+                .UsingJobData("JobName", jobDefinition.Name)
                 .Build();
 
             ITrigger trigger = TriggerBuilder.Create()
                 .WithIdentity(triggerDefinition.Name, group)
                 .WithCronSchedule(triggerDefinition.CronExpression)
+                .UsingJobData("TriggerName", triggerDefinition.Name)
                 .ForJob(job)
                 .Build();
                 

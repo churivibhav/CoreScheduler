@@ -18,41 +18,44 @@ namespace Vhc.CoreScheduler.Common.Jobs
         public string TriggerName { get; set; }
         public string ConnectionString { get; set; }
         public int UnitCollectionId { get; set; }
+        public int EnvironmentId { get; set; }
 
         public static string UnitCollectionIdPropertyName => nameof(UnitCollectionId);
 
         public async Task Execute(IJobExecutionContext context)
         {
-            // var log = AppServices.Provider.GetService<ILogger>();
-            try { 
-            var unitService = AppServices.Provider.GetService<UnitService>();
-            
-            //log.LogInformation("Starting job...");
-
-                using (IDbConnection dbConnection = AppServices.Provider.GetService<IDatabaseService>().GetConnection(ConnectionString))
+            using (var scope = AppServices.ScopeFactory.CreateScope())
+            {
+                var log = scope.ServiceProvider.GetService<ILogger>();
+                try
                 {
-                    dbConnection.Open();
-                    foreach (var unit in unitService.GetCollectionById(UnitCollectionId))
+                    var unitService = scope.ServiceProvider.GetService<IUnitService>();
+                    var variableService = scope.ServiceProvider.GetService<IVariableService>();
+                    var variables = variableService.GetAllActiveByEnv(EnvironmentId);
+                    //log.LogInformation("Starting job...");
+
+                    using (IDbConnection dbConnection = scope.ServiceProvider.GetService<IDatabaseService>().GetConnection(ConnectionString))
                     {
-                        IUnitExecutor executor = unit.GetUnitExecutor();
-                        var result = await executor.Execute(dbConnection, unit);
-                        // Get Content
-                            // replace variables in content e.g. {startDate} to be replaced by value of startDate variable
-                            // executeAsync in dbConnection using Dapper
-                            // log result
-                        // For codeUnit
+                        dbConnection.Open();
+                        foreach (var unit in unitService.GetCollectionById(UnitCollectionId))
+                        {
+                            IUnitExecutor executor = unit.GetUnitExecutor();
+                            var result = await executor.Execute(dbConnection, variables, unit);
+
+                            // For codeUnit
                             // supply variables to python
                             // run python thru engine
                             // get variables back and update them in memory
-                        
-                        await Console.Out.WriteLineAsync($"{unit.Content}");
+
+                            await Console.Out.WriteLineAsync($"{unit.Content}");
+                        }
+                        dbConnection.Close();
                     }
-                    dbConnection.Close();
-                } 
-            }
-            catch (Exception ex)
-            {
-                //log.LogError(ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    //log.LogError(ex.Message);
+                }
             }
         }
     }

@@ -16,6 +16,7 @@ using Microsoft.Extensions.Hosting;
 using Vhc.CoreScheduler.Common.Services;
 using System.Threading;
 using Vhc.CoreScheduler.Services;
+using Microsoft.Extensions.Logging;
 
 namespace Vhc.CoreScheduler
 {
@@ -30,7 +31,12 @@ namespace Vhc.CoreScheduler
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {            
+        {
+            services.AddLogging(config =>
+            {
+                config.AddLog4Net();
+                config.SetMinimumLevel(LogLevel.Information);
+            });
 
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -44,8 +50,9 @@ namespace Vhc.CoreScheduler
                     Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddSingleton<SchedulerService>();
-            services.AddTransient<UnitService>();
+            services.AddTransient<IUnitService, UnitService>();
             services.AddSingleton<IDatabaseService, DatabaseService>();
+            services.AddScoped<IVariableService, VariableService>();
             
             services.AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -67,9 +74,6 @@ namespace Vhc.CoreScheduler
                 app.UseHsts();
             }
 
-            // Set up services DI for Common 
-            AppServices.Provider = app.ApplicationServices;
-
             Task.Run(async () =>
             {
                 var service = app.ApplicationServices.GetService<SchedulerService>();
@@ -80,9 +84,10 @@ namespace Vhc.CoreScheduler
                 {
                     Id = 1,
                     Name = "A",
-                    CronExpression = "*/15 * * * * ?",
+                    CronExpression = "30 * * * * ?",
                     Environment = new Common.Models.ExecutionEnvironment
                     {
+                        Id = 1,
                         Name = "ENV",
                         ConnectionString = "Data Source=env.db"
                     },

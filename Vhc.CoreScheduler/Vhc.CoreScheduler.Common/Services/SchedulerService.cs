@@ -1,4 +1,5 @@
-﻿using Quartz;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Quartz;
 using Quartz.Impl;
 using Quartz.Impl.Matchers;
 using System;
@@ -19,7 +20,7 @@ namespace Vhc.CoreScheduler.Common.Services
         private StdSchedulerFactory factory;
         private IScheduler scheduler;
 
-        public SchedulerService()
+        public SchedulerService(IServiceScopeFactory scopeFactory) : base(scopeFactory)
         {
             NameValueCollection props = new NameValueCollection
             {
@@ -64,6 +65,7 @@ namespace Vhc.CoreScheduler.Common.Services
                 .WithCronSchedule(triggerDefinition.CronExpression)
                 .UsingJobData("TriggerName", triggerDefinition.Name)
                 .UsingJobData("ConnectionString", triggerDefinition.Environment.ConnectionString)
+                .UsingJobData("EnvironmentId", triggerDefinition.Environment.Id)
                 .ForJob(job)
                 .Build();
                 

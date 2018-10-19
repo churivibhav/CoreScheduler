@@ -9,6 +9,7 @@ namespace Vhc.CoreScheduler.Common.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public string Value { get; set; }
+        public bool Active { get; set; }
         public ExecutionEnvironment Environment { get; set; }
     }
 }

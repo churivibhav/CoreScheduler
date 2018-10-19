@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace Vhc.CoreScheduler.Common.Services
@@ -8,8 +9,15 @@ namespace Vhc.CoreScheduler.Common.Services
     {
         private Task executingTask;
         private CancellationTokenSource cts;
+        protected IServiceScopeFactory scopeFactory;
 
         protected abstract Task ExecuteAsync(CancellationToken token);
+
+        protected HostedService(IServiceScopeFactory scopeFactory)
+        {
+            this.scopeFactory = scopeFactory;
+            AppServices.ScopeFactory = scopeFactory;
+        }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {

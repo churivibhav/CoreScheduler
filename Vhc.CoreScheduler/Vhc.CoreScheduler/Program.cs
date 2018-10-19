@@ -19,11 +19,6 @@ namespace Vhc.CoreScheduler
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .ConfigureLogging(logging =>
-                {
-                    logging.AddLog4Net();
-                    logging.SetMinimumLevel(LogLevel.Debug);
-                })
                 .UseStartup<Startup>();
     }
 }

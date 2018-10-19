@@ -11,7 +11,7 @@ using Vhc.CoreScheduler.Common.Models;
 
 namespace Vhc.CoreScheduler.Common.Services
 {
-    public class SchedulerService : HostedService
+    public class SchedulerService : HostedService, ISchedulerService
     {
         private const string DEFAULT_GROUP = "DefaultGroup";
         private StdSchedulerFactory factory;
@@ -50,6 +50,7 @@ namespace Vhc.CoreScheduler.Common.Services
             string group = jobDefinition.Group?.Name ?? DEFAULT_GROUP;
             IJobDetail job = JobBuilder.Create<OrchestrationJob>()
                 .WithIdentity(jobDefinition.Name, group)
+                .UsingJobData(OrchestrationJob.UnitCollectionIdPropertyName, jobDefinition.UnitCollectionId)
                 .Build();
 
             ITrigger trigger = TriggerBuilder.Create()
@@ -59,6 +60,14 @@ namespace Vhc.CoreScheduler.Common.Services
                 .Build();
                 
             await scheduler.ScheduleJob(job, trigger);
+        }
+
+        public async Task DeregisterTriggerAsync(TriggerDefinition triggerDefinition)
+        {
+            if (scheduler is null) throw new InvalidOperationException();
+            if (triggerDefinition is null) throw new ArgumentNullException();
+
+            await scheduler.UnscheduleJob(new TriggerKey(triggerDefinition.Name, triggerDefinition.JobDefinition.Group?.Name ?? DEFAULT_GROUP));
         }
     }
 }

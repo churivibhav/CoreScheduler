@@ -8,11 +8,6 @@ namespace Vhc.CoreScheduler.Common.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public JobGroup Group { get; set; }
-        public IEnumerable<IJobUnit> Units { get; set; }
-
-        public JobDefinition()
-        {
-            Units = new List<IJobUnit>();
-        }
+        public int UnitCollectionId { get; set; }
     }
 }

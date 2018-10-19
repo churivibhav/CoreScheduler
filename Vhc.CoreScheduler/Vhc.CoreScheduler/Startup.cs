@@ -42,6 +42,7 @@ namespace Vhc.CoreScheduler
                     Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddSingleton<SchedulerService>();
+            services.AddTransient<UnitService>();
 
             services.AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -63,6 +64,9 @@ namespace Vhc.CoreScheduler
                 app.UseHsts();
             }
 
+            // Set up services DI for Common 
+            AppServices.Provider = app.ApplicationServices;
+
             Task.Run(async () =>
             {
                 var service = app.ApplicationServices.GetService<SchedulerService>();
@@ -81,7 +85,8 @@ namespace Vhc.CoreScheduler
                         Group = new Common.Models.JobGroup
                         {
                             Id = 1, Name = "G"
-                        }
+                        },
+                        UnitCollectionId = 345
                     }
                 });
 

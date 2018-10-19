@@ -21,7 +21,7 @@ namespace Vhc.CoreScheduler.Common.Executors
             }
             else if (jobUnit is CodeUnit)
             {
-                return null;
+                return new CodeExecutor();
             }
 
             return null;

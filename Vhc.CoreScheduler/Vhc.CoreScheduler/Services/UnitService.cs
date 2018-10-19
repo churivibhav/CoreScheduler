@@ -10,9 +10,17 @@ namespace Vhc.CoreScheduler.Services
         {
             return new List<IJobUnit>
             {
+                new CodeUnit
+                {
+                    Id = 2, Name = "Set",
+                    Content = @"
+print Name
+SalaryValue = '100'
+"
+                },
                 new DatabaseUnit {
                     Id = 1, Name = "Insert",
-                    Content = "INSERT INTO EMP (NAME, [Salary]) VALUES ('MANISH', [SalaryValue])"}
+                    Content = "INSERT INTO EMP (NAME, SALARY) VALUES ('[Name]', [SalaryValue])"}
             };
         }
     }

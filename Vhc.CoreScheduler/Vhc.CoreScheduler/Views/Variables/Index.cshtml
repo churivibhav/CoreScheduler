@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<Vhc.CoreScheduler.Common.Models.ExecutionVariable>
 
 @{
-    ViewData["Title"] = "Variables";
+    ViewData["Title"] = "Index";
 }
 
 <h2>Index</h2>
@@ -18,6 +18,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Value)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Active)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -29,6 +32,9 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Value)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Active)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

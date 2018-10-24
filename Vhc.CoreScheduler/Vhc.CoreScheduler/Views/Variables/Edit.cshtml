@@ -1,4 +1,4 @@
-﻿@model Vhc.CoreScheduler.Common.Models.ExecutionVariable
+﻿@model Vhc.CoreScheduler.Models.VariableViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -23,6 +23,20 @@
                 <input asp-for="Value" class="form-control" />
                 <span asp-validation-for="Value" class="text-danger"></span>
             </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="Active" /> @Html.DisplayNameFor(model => model.Active)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <select asp-for="EnvironmentId"
+                        asp-items="@(new SelectList(Model.Environments,"Id","Name"))">
+                    <option>Please select one</option>
+                </select>
+            </div>
+            
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-default" />
             </div>

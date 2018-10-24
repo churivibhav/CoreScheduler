@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Vhc.CoreScheduler.Common.Models;
 using Vhc.CoreScheduler.Data;
+using Vhc.CoreScheduler.Models;
 
 namespace Vhc.CoreScheduler.Controllers
 {
@@ -33,20 +34,31 @@ namespace Vhc.CoreScheduler.Controllers
                 return NotFound();
             }
 
-            var executionVariable = await _context.Variables
+            var executionVariable = await _context.Variables.Include(v => v.Environment)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (executionVariable == null)
             {
                 return NotFound();
             }
-
-            return View(executionVariable);
+            var viewModel = new VariableViewModel
+            {
+                Id = executionVariable.Id,
+                Name = executionVariable.Name,
+                Active = executionVariable.Active,
+                Value = executionVariable.Value,
+                EnvironmentName = executionVariable.Environment?.Name
+            };
+            return View(viewModel);
         }
 
         // GET: Variables/Create
         public IActionResult Create()
         {
-            return View();
+            var model = new VariableViewModel
+            {
+                Environments = _context.ExecutionEnvironments.ToList()
+            };
+            return View(model);
         }
 
         // POST: Variables/Create
@@ -54,15 +66,23 @@ namespace Vhc.CoreScheduler.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Value")] ExecutionVariable executionVariable)
+        public async Task<IActionResult> Create([Bind("Id,Name,Value,Active,EnvironmentId")] VariableViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(executionVariable);
+                var environment = await _context.ExecutionEnvironments.FindAsync(viewModel.EnvironmentId);
+                var entity = new ExecutionVariable
+                {
+                    Name = viewModel.Name,
+                    Active = viewModel.Active,
+                    Environment = environment,
+                    Value = viewModel.Value
+                };
+                _context.Add(entity);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(executionVariable);
+            return View(viewModel);
         }
 
         // GET: Variables/Edit/5
@@ -73,12 +93,21 @@ namespace Vhc.CoreScheduler.Controllers
                 return NotFound();
             }
 
-            var executionVariable = await _context.Variables.FindAsync(id);
+            var executionVariable = await _context.Variables.Include(v => v.Environment).FirstAsync(m => m.Id == id);
             if (executionVariable == null)
             {
                 return NotFound();
             }
-            return View(executionVariable);
+            var viewModel = new VariableViewModel
+            {
+                Id = executionVariable.Id,
+                Name = executionVariable.Name,
+                Active = executionVariable.Active,
+                Value = executionVariable.Value,
+                EnvironmentId = executionVariable.Environment?.Id ?? 0,
+                Environments = _context.ExecutionEnvironments.ToList()
+            };
+            return View(viewModel);
         }
 
         // POST: Variables/Edit/5
@@ -86,9 +115,9 @@ namespace Vhc.CoreScheduler.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Value")] ExecutionVariable executionVariable)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Value,Active,EnvironmentId")] VariableViewModel viewModel)
         {
-            if (id != executionVariable.Id)
+            if (id != viewModel.Id)
             {
                 return NotFound();
             }
@@ -97,12 +126,21 @@ namespace Vhc.CoreScheduler.Controllers
             {
                 try
                 {
-                    _context.Update(executionVariable);
+                    var environment = await _context.ExecutionEnvironments.FindAsync(viewModel.EnvironmentId);
+                    var entity = new ExecutionVariable
+                    {
+                        Id = viewModel.Id,
+                        Name = viewModel.Name,
+                        Active = viewModel.Active,
+                        Environment = environment,
+                        Value = viewModel.Value
+                    };
+                    _context.Update(entity);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ExecutionVariableExists(executionVariable.Id))
+                    if (!ExecutionVariableExists(viewModel.Id))
                     {
                         return NotFound();
                     }
@@ -113,7 +151,7 @@ namespace Vhc.CoreScheduler.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(executionVariable);
+            return View(viewModel);
         }
 
         // GET: Variables/Delete/5

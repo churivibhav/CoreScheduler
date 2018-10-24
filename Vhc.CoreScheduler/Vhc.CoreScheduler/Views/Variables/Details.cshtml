@@ -1,4 +1,4 @@
-﻿@model Vhc.CoreScheduler.Common.Models.ExecutionVariable
+﻿@model Vhc.CoreScheduler.Models.VariableViewModel
 
 @{
     ViewData["Title"] = "Details";
@@ -23,10 +23,16 @@
             @Html.DisplayFor(model => model.Value)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Environment)
+            @Html.DisplayNameFor(model => model.Active)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Environment.Name)
+            @Html.DisplayFor(model => model.Active)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.EnvironmentName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.EnvironmentName)
         </dd>
     </dl>
 </div>

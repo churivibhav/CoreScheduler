@@ -12,13 +12,13 @@ namespace Vhc.CoreScheduler.Data
         public DbSet<ExecutionEnvironment> ExecutionEnvironments { get; set; }
         public DbSet<ExecutionVariable> Variables { get; set; }
         public DbSet<JobGroup> Groups { get; set; }
-        //public DbSet<JobDefinition> Jobs { get; set; }
-        //public DbSet<TriggerDefinition> Triggers { get; set; }
-      
+        public DbSet<JobDefinition> Jobs { get; set; }
+        public DbSet<TriggerDefinition> Triggers { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
+
     }
 }

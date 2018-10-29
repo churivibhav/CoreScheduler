@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Vhc.CoreScheduler.Data;
 
 namespace Vhc.CoreScheduler.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20181029103239_AddingJobs")]
+    partial class AddingJobs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -241,28 +243,6 @@ namespace Vhc.CoreScheduler.Data.Migrations
                     b.ToTable("Groups");
                 });
 
-            modelBuilder.Entity("Vhc.CoreScheduler.Common.Models.TriggerDefinition", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("CronExpression");
-
-                    b.Property<int?>("EnvironmentId");
-
-                    b.Property<int?>("JobDefinitionId");
-
-                    b.Property<string>("Name");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EnvironmentId");
-
-                    b.HasIndex("JobDefinitionId");
-
-                    b.ToTable("Triggers");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole")
@@ -320,17 +300,6 @@ namespace Vhc.CoreScheduler.Data.Migrations
                     b.HasOne("Vhc.CoreScheduler.Common.Models.JobGroup", "Group")
                         .WithMany()
                         .HasForeignKey("GroupId");
-                });
-
-            modelBuilder.Entity("Vhc.CoreScheduler.Common.Models.TriggerDefinition", b =>
-                {
-                    b.HasOne("Vhc.CoreScheduler.Common.Models.ExecutionEnvironment", "Environment")
-                        .WithMany()
-                        .HasForeignKey("EnvironmentId");
-
-                    b.HasOne("Vhc.CoreScheduler.Common.Models.JobDefinition", "JobDefinition")
-                        .WithMany()
-                        .HasForeignKey("JobDefinitionId");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,0 +1,50 @@
+﻿@model Vhc.CoreScheduler.Models.JobViewModel
+
+@{
+    ViewData["Title"] = "Job Details";
+}
+
+<h2>Job Details</h2>
+
+<div>
+    <h4>Job</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.JobGroupName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.JobGroupName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.UnitCollectionId)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.UnitCollectionId)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Units)
+        </dt>
+        <dd>
+            <ul>
+                @foreach (var unit in Model.Units)
+                {
+                    <li>
+                        <div>@unit.Name</div>
+                        <div>@unit.Content</div>
+                    </li>
+                }
+            </ul>
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

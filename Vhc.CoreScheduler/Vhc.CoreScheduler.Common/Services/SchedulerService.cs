@@ -11,12 +11,13 @@ using System.Threading.Tasks;
 using Vhc.CoreScheduler.Common.Jobs;
 using Vhc.CoreScheduler.Common.Listeners;
 using Vhc.CoreScheduler.Common.Models;
+using Vhc.CoreScheduler.Common.Utils;
 
 namespace Vhc.CoreScheduler.Common.Services
 {
     public class SchedulerService : HostedService, ISchedulerService
     {
-        private const string DEFAULT_GROUP = "DefaultGroup";
+        
         private StdSchedulerFactory factory;
         private IScheduler scheduler;
 
@@ -53,15 +54,14 @@ namespace Vhc.CoreScheduler.Common.Services
 
             var jobDefinition = triggerDefinition.JobDefinition;
 
-            string group = jobDefinition.Group?.Name ?? DEFAULT_GROUP;
             IJobDetail job = JobBuilder.Create<OrchestrationJob>()
-                .WithIdentity(jobDefinition.Name, group)
+                .WithIdentity(jobDefinition.Name, jobDefinition.Group.GetNameOrDefault())
                 .UsingJobData(OrchestrationJob.UnitCollectionIdPropertyName, jobDefinition.UnitCollectionId)
                 .UsingJobData("JobName", jobDefinition.Name)
                 .Build();
 
             ITrigger trigger = TriggerBuilder.Create()
-                .WithIdentity(triggerDefinition.Name, group)
+                .WithIdentity(triggerDefinition.Name, jobDefinition.Group.GetNameOrDefault())
                 .WithCronSchedule(triggerDefinition.CronExpression)
                 .UsingJobData("TriggerName", triggerDefinition.Name)
                 .UsingJobData("ConnectionString", triggerDefinition.Environment.ConnectionString)
@@ -77,7 +77,16 @@ namespace Vhc.CoreScheduler.Common.Services
             if (scheduler is null) throw new InvalidOperationException();
             if (triggerDefinition is null) throw new ArgumentNullException();
 
-            await scheduler.UnscheduleJob(new TriggerKey(triggerDefinition.Name, triggerDefinition.JobDefinition.Group?.Name ?? DEFAULT_GROUP));
+            await scheduler.UnscheduleJob(new TriggerKey(triggerDefinition.Name, triggerDefinition.JobDefinition.Group.GetNameOrDefault()));
+        }
+
+        public async Task RunJobAsync(JobDefinition jobDefinition)
+        {
+            if (scheduler is null) throw new InvalidOperationException();
+            if (jobDefinition is null) throw new ArgumentNullException();
+
+            await scheduler.TriggerJob(new JobKey(jobDefinition.Name, jobDefinition.Group.GetNameOrDefault()));
+
         }
     }
 }

@@ -41,12 +41,6 @@ namespace Vhc.CoreScheduler.Common.Jobs
                         {
                             IUnitExecutor executor = unit.GetUnitExecutor();
                             var result = await executor.Execute(dbConnection, variables, unit);
-
-                            // For codeUnit
-                            // supply variables to python
-                            // run python thru engine
-                            // get variables back and update them in memory
-
                             await Console.Out.WriteLineAsync($"{unit.Content}");
                         }
                         dbConnection.Close();

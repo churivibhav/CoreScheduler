@@ -52,11 +52,11 @@ namespace Vhc.CoreScheduler.Controllers
         }
 
         // GET: Variables/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             var model = new VariableViewModel
             {
-                Environments = _context.ExecutionEnvironments.ToList()
+                Environments = await _context.ExecutionEnvironments.ToListAsync()
             };
             return View(model);
         }

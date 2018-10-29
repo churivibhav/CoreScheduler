@@ -80,28 +80,28 @@ namespace Vhc.CoreScheduler
                 var cts = new CancellationTokenSource();
                 await service.StartAsync(cts.Token);
 
-                await service.RegisterTriggerAsync(new Common.Models.TriggerDefinition
-                {
-                    Id = 1,
-                    Name = "A",
-                    CronExpression = "30 * * * * ?",
-                    Environment = new Common.Models.ExecutionEnvironment
-                    {
-                        Id = 1,
-                        Name = "ENV",
-                        ConnectionString = "Data Source=env.db"
-                    },
-                    JobDefinition = new Common.Models.JobDefinition
-                    {
-                        Id = 2,
-                        Name = "JA",
-                        Group = new Common.Models.JobGroup
-                        {
-                            Id = 1, Name = "G"
-                        },
-                        UnitCollectionId = 345
-                    }
-                });
+                //await service.RegisterTriggerAsync(new Common.Models.TriggerDefinition
+                //{
+                //    Id = 1,
+                //    Name = "A",
+                //    CronExpression = "30 * * * * ?",
+                //    Environment = new Common.Models.ExecutionEnvironment
+                //    {
+                //        Id = 1,
+                //        Name = "ENV",
+                //        ConnectionString = "Data Source=env.db"
+                //    },
+                //    JobDefinition = new Common.Models.JobDefinition
+                //    {
+                //        Id = 2,
+                //        Name = "JA",
+                //        Group = new Common.Models.JobGroup
+                //        {
+                //            Id = 1, Name = "G"
+                //        },
+                //        UnitCollectionId = 345
+                //    }
+                //});
 
                 
             });

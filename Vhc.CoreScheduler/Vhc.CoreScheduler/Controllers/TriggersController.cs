@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Vhc.CoreScheduler.Common.Models;
+using Vhc.CoreScheduler.Common.Services;
 using Vhc.CoreScheduler.Data;
 using Vhc.CoreScheduler.Models;
 
@@ -14,10 +15,12 @@ namespace Vhc.CoreScheduler.Controllers
     public class TriggersController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly ISchedulerService _scheduler;
 
-        public TriggersController(ApplicationDbContext context)
+        public TriggersController(ApplicationDbContext context, ISchedulerService scheduler)
         {
             _context = context;
+            _scheduler = scheduler;
         }
 
         // GET: Triggers
@@ -70,6 +73,8 @@ namespace Vhc.CoreScheduler.Controllers
             return View(model);
         }
 
+
+
         // POST: Triggers/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -91,6 +96,9 @@ namespace Vhc.CoreScheduler.Controllers
                 };
                 _context.Add(entity);
                 await _context.SaveChangesAsync();
+
+                await _scheduler.RegisterTrigger(entity);
+
                 return RedirectToAction(nameof(Index));
             }
             return View(model);
@@ -153,8 +161,12 @@ namespace Vhc.CoreScheduler.Controllers
                         JobDefinition = job,
                         CronExpression = model.CronExpression
                     };
+                    await _scheduler.DeregisterTrigger(entity);
+
                     _context.Update(entity);
                     await _context.SaveChangesAsync();
+                   
+                    await _scheduler.RegisterTrigger(entity);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -195,7 +207,9 @@ namespace Vhc.CoreScheduler.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            
             var triggerDefinition = await _context.Triggers.FindAsync(id);
+            await _scheduler.DeregisterTrigger(triggerDefinition);
             _context.Triggers.Remove(triggerDefinition);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

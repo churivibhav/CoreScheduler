@@ -32,7 +32,7 @@ namespace Vhc.CoreScheduler.Common.Jobs
                     var unitService = scope.ServiceProvider.GetService<IUnitService>();
                     var variableService = scope.ServiceProvider.GetService<IVariableService>();
                     var variables = variableService.GetAllActiveByEnv(EnvironmentId);
-                    //log.LogInformation("Starting job...");
+                    await Console.Out.WriteLineAsync("Starting job...");
 
                     using (IDbConnection dbConnection = scope.ServiceProvider.GetService<IDatabaseService>().GetConnection(ConnectionString))
                     {
@@ -45,10 +45,11 @@ namespace Vhc.CoreScheduler.Common.Jobs
                         }
                         dbConnection.Close();
                     }
+                    await Console.Out.WriteLineAsync("Job finished...");
                 }
                 catch (Exception ex)
                 {
-                    //log.LogError(ex.Message);
+                    await Console.Out.WriteLineAsync(ex.Message);
                 }
             }
         }

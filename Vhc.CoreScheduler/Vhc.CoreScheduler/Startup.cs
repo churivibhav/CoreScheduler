@@ -49,11 +49,13 @@ namespace Vhc.CoreScheduler
                 options.UseSqlite(
                     Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddSingleton<SchedulerService>();
+            
+            services.AddSingleton<ISchedulerService, SchedulerService>();
             services.AddTransient<IUnitService, UnitService>();
             services.AddSingleton<IDatabaseService, DatabaseService>();
             services.AddScoped<IVariableService, VariableService>();
-            
+            services.AddSingleton<TriggerService>();
+
             services.AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
@@ -76,10 +78,12 @@ namespace Vhc.CoreScheduler
 
             Task.Run(async () =>
             {
-                var service = app.ApplicationServices.GetService<SchedulerService>();
+                var service = app.ApplicationServices.GetService<ISchedulerService>();
                 var cts = new CancellationTokenSource();
                 await service.StartAsync(cts.Token);
 
+                var triggerService = app.ApplicationServices.GetService<TriggerService>();
+                await triggerService.RegisterAllTriggers();
                 //await service.RegisterTriggerAsync(new Common.Models.TriggerDefinition
                 //{
                 //    Id = 1,

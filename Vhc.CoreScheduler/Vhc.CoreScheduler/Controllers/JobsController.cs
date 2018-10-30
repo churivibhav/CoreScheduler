@@ -90,22 +90,12 @@ namespace Vhc.CoreScheduler.Controllers
                 };
                 _context.Add(entity);
                 await _context.SaveChangesAsync();
+                await _scheduler.AddJob(entity);
                 return RedirectToAction(nameof(Index));
             }
             return View(model);
         }
 
-        public async Task<IActionResult> Run(int? id)
-        {
-            var jobDefinition = await _context.Jobs.Include(j => j.Group)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (jobDefinition == null)
-            {
-                return NotFound();
-            }
-            await _scheduler.RunJobAsync(jobDefinition);
-            return RedirectToAction("Index");
-        }
 
         // GET: Jobs/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -158,8 +148,10 @@ namespace Vhc.CoreScheduler.Controllers
                         Group = group,
                         UnitCollectionId = model.UnitCollectionId
                     };
+                    await _scheduler.DeleteJob(entity);
                     _context.Update(entity);
                     await _context.SaveChangesAsync();
+                    await _scheduler.AddJob(entity);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -191,7 +183,6 @@ namespace Vhc.CoreScheduler.Controllers
             {
                 return NotFound();
             }
-
             return View(jobDefinition);
         }
 
@@ -201,6 +192,7 @@ namespace Vhc.CoreScheduler.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var jobDefinition = await _context.Jobs.FindAsync(id);
+            await _scheduler.DeleteJob(jobDefinition);
             _context.Jobs.Remove(jobDefinition);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -209,6 +201,20 @@ namespace Vhc.CoreScheduler.Controllers
         private bool JobDefinitionExists(int id)
         {
             return _context.Jobs.Any(e => e.Id == id);
+        }
+
+
+        public async Task<IActionResult> Run(int? id)
+        {
+            var jobDefinition = await _context.Jobs.Include(t => t.Group)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (jobDefinition == null)
+            {
+                return NotFound();
+            }
+            var tempTestingEnvironment = _context.ExecutionEnvironments.FirstOrDefault();
+            await _scheduler.RunJob(jobDefinition, tempTestingEnvironment);
+            return RedirectToAction("Index");
         }
     }
 }

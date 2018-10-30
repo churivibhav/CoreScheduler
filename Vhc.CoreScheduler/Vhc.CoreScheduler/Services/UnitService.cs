@@ -20,7 +20,13 @@ SalaryValue = '100'
                 },
                 new DatabaseUnit {
                     Id = 1, Name = "Insert",
-                    Content = "INSERT INTO EMP (NAME, SALARY) VALUES ('[Name]', [SalaryValue])"}
+                    Content = "INSERT INTO EMP (NAME, SALARY) VALUES ('[Name]', [SalaryValue])"
+                },
+                new DatabaseUnit
+                {
+                    Id = 2, Name = "Department",
+                    Content = "DELETE FROM DEP"
+                }
             };
         }
     }

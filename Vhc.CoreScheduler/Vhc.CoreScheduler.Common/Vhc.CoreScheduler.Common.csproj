@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Services\bqzvtwod.43l~" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Dapper" Version="1.50.5" />
     <PackageReference Include="IronPython" Version="2.7.9" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />

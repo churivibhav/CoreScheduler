@@ -15,11 +15,11 @@ namespace Vhc.CoreScheduler.Common.Executors
     {
         public static IUnitExecutor GetUnitExecutor(this IJobUnit jobUnit)
         {
-            if (jobUnit is DatabaseUnit)
+            if (jobUnit.Type == UnitType.DatabaseUnit)
             {
                 return new DatabaseExecutor();
             }
-            else if (jobUnit is CodeUnit)
+            else if (jobUnit.Type == UnitType.CodeUnit)
             {
                 return new CodeExecutor();
             }

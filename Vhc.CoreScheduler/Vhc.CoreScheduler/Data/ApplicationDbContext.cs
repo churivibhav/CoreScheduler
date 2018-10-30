@@ -20,5 +20,7 @@ namespace Vhc.CoreScheduler.Data
         {
         }
 
+        public DbSet<Vhc.CoreScheduler.Common.Models.JobUnit> JobUnit { get; set; }
+
     }
 }
